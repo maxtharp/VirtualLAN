@@ -4,27 +4,21 @@ import java.net.InetAddress;
 import java.util.Arrays;
 public class Host {
     public static void main(String[] args) throws Exception{
-
         int port = 3000;
-        DatagramSocket serverSocket = new DatagramSocket(port);
-        DatagramPacket clientRequest = new DatagramPacket(
+        DatagramSocket receivingSocket = new DatagramSocket(port);
+        DatagramPacket receivedFrame = new DatagramPacket(
                 new byte[1024], 1024);
         while(true){
-            serverSocket.receive(clientRequest);
+            receivingSocket.receive(receivedFrame);
             byte[] clientMessage = Arrays.copyOf(
-                    clientRequest.getData(),
-                    clientRequest.getLength()
+                    receivedFrame.getData(),
+                    receivedFrame.getLength()
             );
-            String replyMessage = new String(clientMessage).toUpperCase();
-            InetAddress clientIP = clientRequest.getAddress();
-            int clientPort = clientRequest.getPort();
-            DatagramPacket serverReply = new DatagramPacket(
-                    replyMessage.getBytes(),
-                    replyMessage.getBytes().length,
-                    clientIP,
-                    clientPort
-            );
-            serverSocket.send(serverReply);
+            InetAddress receivedIP = receivedFrame.getAddress();
+            int receivedPort = receivedFrame.getPort();
+            String messageString = new String(clientMessage);
+            String acknowledgment = "Message received.\nPort Number: " + receivedPort + ".\nIP: " + receivedIP + ".\n Message Content: " + messageString;
+            System.out.println(acknowledgment);
         }
     }
 }
