@@ -5,11 +5,25 @@ class Device {
     String name;
     int port;
     String ipAddress;
+    List<Device> neighbors = new ArrayList<>();
 
     public Device(String name, int port, String ipAddress) {
         this.name = name;
         this.port = port;
         this.ipAddress = ipAddress;
+    }
+
+    public void addNeighbor(Device neighbor) {
+        neighbors.add(neighbor);
+    }
+
+    public void GetNeighbors(String name) {
+        if (this.name.equals(name)) {
+            System.out.println("Neighbors of " + name + ":");
+            for (Device neighbor : neighbors) {
+                System.out.println("Port: " + neighbor.port + ", IP Address: " + neighbor.ipAddress);
+            }
+        }
     }
 
     @Override
@@ -19,9 +33,8 @@ class Device {
 }
 
 public class parser {
-
     public static void main(String[] args) {
-        String configFilePath = "config.txt"; // Path to your config.txt file
+        String configFilePath = "src/config.txt"; // Path to your config.txt file
 
         List<Device> devices = new ArrayList<>();
         List<String[]> links = new ArrayList<>();
@@ -60,6 +73,17 @@ public class parser {
                 }
             }
 
+            // Establish neighbors based on links
+            for (String[] link : links) {
+                Device device1 = findDeviceByName(devices, link[0]);
+                Device device2 = findDeviceByName(devices, link[1]);
+
+                if (device1 != null && device2 != null) {
+                    device1.addNeighbor(device2);
+                    device2.addNeighbor(device1);
+                }
+            }
+
             // Print parsed data for validation
             System.out.println("Devices:");
             for (Device device : devices) {
@@ -71,10 +95,25 @@ public class parser {
                 System.out.println(link[0] + " <-> " + link[1]);
             }
 
+            // Test GetNeighbors
+            String testDeviceName = "A";
+            for (Device device : devices) {
+                device.GetNeighbors(testDeviceName);
+            }
+
         } catch (IOException e) {
             System.err.println("Error reading the configuration file: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.err.println("Error parsing port number: " + e.getMessage());
         }
+    }
+
+    private static Device findDeviceByName(List<Device> devices, String name) {
+        for (Device device : devices) {
+            if (device.name.equals(name)) {
+                return device;
+            }
+        }
+        return null;
     }
 }
