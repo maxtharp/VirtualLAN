@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Switch {
@@ -44,6 +45,27 @@ public class Switch {
     }
 
     public static void main(String[] args) {
+        //testing
+        Parser parser = new Parser();
+
+        String deviceName = "A"; // Example device
+
+        List<String> neighborIPs = parser.getNeighborsIP(deviceName);
+        List<Integer> neighborPorts = parser.getNeighborsPort(deviceName);
+
+        if (!neighborIPs.isEmpty()) {
+            System.out.println("Neighbors' IPs of " + deviceName + ": " + neighborIPs);
+        } else {
+            System.out.println("No neighbors found for " + deviceName);
+        }
+
+        if (!neighborPorts.isEmpty()) {
+            System.out.println("Neighbors' Ports of " + deviceName + ": " + neighborPorts);
+        } else {
+            System.out.println("No neighbors found for " + deviceName);
+        }
+        //end testing
+
         Switch switch1 = new Switch();
     }
 }
