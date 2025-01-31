@@ -48,6 +48,7 @@ public class Switch {
     }
 
     public static void main(String[] args) throws IOException {
+        Switch aSwitch = new Switch();
         Scanner keyboard = new Scanner(System.in);
         System.out.println("Enter the source MAC: ");
         String inputMAC = keyboard.nextLine();
@@ -59,8 +60,11 @@ public class Switch {
 
         final int devicePort = Parser.getPort(inputMAC);
 
-        Switch aSwitch = new Switch();
-        aSwitch.addPort(devicePort, "");
+        for (int i = 0; i < Parser.getNeighborsIP(inputMAC).size(); i++){
+            aSwitch.addPort(Parser.getNeighborsPort(inputMAC).get(i),
+                    Parser.getNeighborsIP(inputMAC).get(i));
+        }
+
 
         DatagramSocket receivingSocket = new DatagramSocket(devicePort);
         DatagramPacket receivedFrame = new DatagramPacket(new byte[1024], 1024);
