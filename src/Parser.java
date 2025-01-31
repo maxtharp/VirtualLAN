@@ -3,10 +3,10 @@ import java.util.*;
 
 public class Parser {
 
-    private String configFilePath = "src/config.txt"; // Path to your config.txt file
+    private static final String configFilePath = "src/config.txt"; // Path to your config.txt file
 
     // Get neighbors' IP addresses
-    public List<String> getNeighborsIP(String inputName) {
+    public static List<String> getNeighborsIP(String inputName) {
         Map<String, Device> deviceMap = parseConfigFile();
 
         Device targetDevice = deviceMap.get(inputName);
@@ -18,7 +18,7 @@ public class Parser {
     }
 
     // Get neighbors' ports
-    public List<Integer> getNeighborsPort(String inputName) {
+    public static List<Integer> getNeighborsPort(String inputName) {
         Map<String, Device> deviceMap = parseConfigFile();
 
         Device targetDevice = deviceMap.get(inputName);
@@ -29,8 +29,22 @@ public class Parser {
         return Collections.emptyList();
     }
 
+    // Get the port of a specific device
+    public static int getPort(String deviceName) {
+        Map<String, Device> deviceMap = parseConfigFile();
+
+        Device targetDevice = deviceMap.get(deviceName);
+        if (targetDevice != null) {
+            return targetDevice.getPort();
+        }
+
+        // Return -1 if device not found (indicating error)
+        return -1;
+    }
+
+
     // Helper method to parse the config file
-    private Map<String, Device> parseConfigFile() {
+    private static Map<String, Device> parseConfigFile() {
         List<String[]> links = new ArrayList<>();
         Map<String, Device> deviceMap = new HashMap<>();
 
