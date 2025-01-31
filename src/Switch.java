@@ -1,71 +1,83 @@
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+
 
 public class Switch {
-    private Map<String, Integer> macTable;
-    private static final int NUM_PORTS = 4;
+    private Map<String, Port> macTable;  // Map of MAC address to corresponding port
+    private Map<Integer, Port> ports;  // Map of port IDs to Port objects
 
     public Switch() {
         macTable = new HashMap<>();
+        ports = new HashMap<>();
     }
 
-    public void receiveFrame(String srcMac, String destMac, int inputPort) {
-        System.out.println("Received frame from " + srcMac + " to " + destMac + " on port " + inputPort);
-        macTable.put(srcMac, inputPort);
+    public void addPort(int portID, String portName) {
+        ports.put(portID, new Port(portID, portName));
+    }
 
-        Integer destPort = macTable.get(destMac);
+    // Handle incoming packet on a given port
+    public void handleIncomingPacket(Packet packet, int portID) throws IOException {
+        // Check if the MAC address is already in the table
+        String destMac = packet.getDestMac();
+        if (macTable.containsKey(destMac)) {
+            Port foundPort = macTable.get(destMac);
+            foundPort.forwardPacket(packet);
+        } else {
+            flood(portID, packet);
+        }
 
-        if (destPort != null) {
-            if (destPort != inputPort) {
-                System.out.println("Forwarding frame to port " + destPort);
-            } else {
-                System.out.println("Frame is already on the correct port, no forwarding needed.");
+        // Update the MAC address table with the port where the packet came from
+        macTable.put(packet.getSrcMac(), ports.get(portID));
+    }
+
+    // Flood the packet to all other ports except the source port
+    private void flood(int sourcePortId, Packet packet) throws IOException {
+        System.out.println("Flooding packet to all ports except " + sourcePortId);
+
+        // Send packet to all other ports
+        for (Map.Entry<Integer, Port> entry : ports.entrySet()) {
+            if (entry.getKey() != sourcePortId) {
+                entry.getValue().forwardPacket(packet);
             }
-        } else {
-            // Flood the frame to all ports except the input port
-            System.out.println("Destination MAC not found. Flooding frame to all other ports...");
-            floodFrame(inputPort, srcMac, destMac);
         }
     }
 
-    private void floodFrame(int inputPort, String srcMac, String destMac) {
-        for (int port = 1; port <= NUM_PORTS; port++) {
-            if (port != inputPort) {
-                System.out.println("Flooding frame to port " + port);
-            }
-        }
-    }
+    public static void main(String[] args) throws IOException {
+        Scanner keyboard = new Scanner(System.in);
+        System.out.println("Enter the source MAC: ");
+        String inputMAC = keyboard.nextLine();
 
-    public void printMacTable() {
-        System.out.println("Current MAC Table:");
-        for (Map.Entry<String, Integer> entry : macTable.entrySet()) {
-            System.out.println("MAC: " + entry.getKey() + " -> Port: " + entry.getValue());
-        }
-    }
-
-    public static void main(String[] args) {
-        //testing
-        Parser parser = new Parser();
-
-        String deviceName = "A"; // Example device
-
-        List<String> neighborIPs = parser.getNeighborsIP(deviceName);
-        List<Integer> neighborPorts = parser.getNeighborsPort(deviceName);
-
-        if (!neighborIPs.isEmpty()) {
-            System.out.println("Neighbors' IPs of " + deviceName + ": " + neighborIPs);
-        } else {
-            System.out.println("No neighbors found for " + deviceName);
+        while (inputMAC.contains(",")) {
+            System.out.println("You can't have a ',' in your source MAC\nEnter the source MAC: ");
+            inputMAC = keyboard.nextLine();
         }
 
-        if (!neighborPorts.isEmpty()) {
-            System.out.println("Neighbors' Ports of " + deviceName + ": " + neighborPorts);
-        } else {
-            System.out.println("No neighbors found for " + deviceName);
-        }
-        //end testing
+        final int devicePort = Parser.getPort(inputMAC);
 
-        Switch switch1 = new Switch();
+        Switch aSwitch = new Switch();
+        aSwitch.addPort(devicePort, "");
+
+        DatagramSocket receivingSocket = new DatagramSocket(devicePort);
+        DatagramPacket receivedFrame = new DatagramPacket(new byte[1024], 1024);
+
+        while (true) {
+            receivingSocket.receive(receivedFrame);
+            byte[] message = Arrays.copyOf(
+                    receivedFrame.getData(),
+                    receivedFrame.getLength());
+            String[] messageData = new String(message).split(",");
+            Packet packet = new Packet(
+                    messageData[0],
+                    messageData[1],
+                    messageData[2]);
+
+            System.out.println("Received packet on port " + devicePort + " with destination MAC " + packet.getDestMac());
+            aSwitch.handleIncomingPacket(packet, receivedFrame.getPort());
+        }
     }
 }

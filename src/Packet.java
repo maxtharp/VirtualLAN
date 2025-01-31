@@ -1,5 +1,3 @@
-package virtual_switch;
-
 public class Packet {
     private String srcMac;
     private String destMac;
