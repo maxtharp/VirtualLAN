@@ -2,9 +2,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
-public class Host_better {
+public class Host {
     public static void main(String[] args) throws Exception {
 
         Scanner keyboard = new Scanner(System.in);
@@ -65,9 +66,15 @@ public class Host_better {
                 destinationMAC = keyboard.nextLine();
             }
 
-            // get IP and port from parser
-            InetAddress destinationIP = InetAddress.getByName(parser.getNeighborsIP(destinationMAC));
-            int destinationPort = parser.getNeighborsPort(destinationMAC);
+            // get IPs and ports from parser
+            List<String> stringDestinationIPs = Parser.getNeighborsIP(destinationMAC);
+            List<Integer> destinationPorts = Parser.getNeighborsPort(destinationMAC);
+
+            // get the 1st IP (should only be one for project 1)
+            InetAddress destinationIP = InetAddress.getByName(stringDestinationIPs.get(0));
+
+            // get the 1st port (should only be one for project 1)
+            int destinationPort = destinationPorts.get(0);
 
             // create message
             String message = sourceMAC + "," + destinationMAC + "," + text;
