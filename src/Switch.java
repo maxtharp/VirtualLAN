@@ -49,10 +49,12 @@ public class Switch {
     public static void main(String[] args) throws IOException {
         Switch aSwitch = new Switch();
         String deviceMAC = args[0];
-
         final int devicePort = Parser.getPort(deviceMAC);
+        final String deviceIP = Parser.getIP(deviceMAC);
 
-        for (int i = 0; i < Parser.getNeighborsIP(deviceMAC).size(); i++){
+
+        aSwitch.addPort(devicePort, deviceIP);
+        for (int i = 0; i < Parser.getNeighborsPort(deviceMAC).size(); i++){
             aSwitch.addPort(Parser.getNeighborsPort(deviceMAC).get(i),
                     Parser.getNeighborsIP(deviceMAC).get(i));
         }
