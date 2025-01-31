@@ -12,7 +12,7 @@ public class Host {
         DatagramSocket socket = new DatagramSocket(); // sending socket
 
         System.out.println("Enter the source MAC: ");
-        String inputMAC = keyboard.nextLine();
+        String inputMAC = args[0];
 
         // making sure the input doesn't have a comma
         while (inputMAC.contains(",")) {
