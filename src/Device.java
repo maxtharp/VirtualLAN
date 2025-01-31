@@ -34,6 +34,10 @@ public class Device {
         return neighborPorts;
     }
 
+    public int getPort() {
+        return port;
+    }
+
     @Override
     public String toString() {
         return "Device{name='" + name + "', port=" + port + ", ipAddress='" + ipAddress + "'}";

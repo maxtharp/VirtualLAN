@@ -23,6 +23,8 @@ public class Host {
         // allows for the source MAC to be initialized and not changed per instance
         final String sourceMAC = inputMAC;
 
+        final int devicePort = Parser.getPort(sourceMAC);
+
         // sender thread
         Thread senderThread = new Thread(() -> {
             try {
@@ -35,7 +37,7 @@ public class Host {
         // receiver thread
         Thread receiverThread = new Thread(() -> {
             try {
-                receiveMessages(sourceMAC);
+                receiveMessages(sourceMAC, devicePort);
             } catch (Exception e) {
                 System.err.println("Error in receiver thread: " + e.getMessage());
             }
@@ -92,8 +94,7 @@ public class Host {
         }
     }
 
-    private static void receiveMessages(String MAC) throws Exception {
-        int port = 3000;
+    private static void receiveMessages(String MAC, int port) throws Exception {
         DatagramSocket receivingSocket = new DatagramSocket(port);
 
         while (true) {

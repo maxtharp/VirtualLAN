@@ -29,6 +29,20 @@ public class Parser {
         return Collections.emptyList();
     }
 
+    // Get the port of a specific device
+    public static int getPort(String deviceName) {
+        Map<String, Device> deviceMap = parseConfigFile();
+
+        Device targetDevice = deviceMap.get(deviceName);
+        if (targetDevice != null) {
+            return targetDevice.getPort();
+        }
+
+        // Return -1 if device not found (indicating error)
+        return -1;
+    }
+
+
     // Helper method to parse the config file
     private static Map<String, Device> parseConfigFile() {
         List<String[]> links = new ArrayList<>();
