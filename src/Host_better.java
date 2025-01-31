@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class Host {
+public class Host_better {
     public static void main(String[] args) throws Exception {
 
         Scanner keyboard = new Scanner(System.in);
