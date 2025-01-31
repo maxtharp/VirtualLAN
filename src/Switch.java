@@ -4,7 +4,6 @@ import java.net.DatagramSocket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 
 public class Switch {
@@ -49,22 +48,14 @@ public class Switch {
 
     public static void main(String[] args) throws IOException {
         Switch aSwitch = new Switch();
-        Scanner keyboard = new Scanner(System.in);
-        System.out.println("Enter the source MAC: ");
-        String inputMAC = keyboard.nextLine();
+        String deviceMAC = args[0];
 
-        while (inputMAC.contains(",")) {
-            System.out.println("You can't have a ',' in your source MAC\nEnter the source MAC: ");
-            inputMAC = keyboard.nextLine();
+        final int devicePort = Parser.getPort(deviceMAC);
+
+        for (int i = 0; i < Parser.getNeighborsIP(deviceMAC).size(); i++){
+            aSwitch.addPort(Parser.getNeighborsPort(deviceMAC).get(i),
+                    Parser.getNeighborsIP(deviceMAC).get(i));
         }
-
-        final int devicePort = Parser.getPort(inputMAC);
-
-        for (int i = 0; i < Parser.getNeighborsIP(inputMAC).size(); i++){
-            aSwitch.addPort(Parser.getNeighborsPort(inputMAC).get(i),
-                    Parser.getNeighborsIP(inputMAC).get(i));
-        }
-
 
         DatagramSocket receivingSocket = new DatagramSocket(devicePort);
         DatagramPacket receivedFrame = new DatagramPacket(new byte[1024], 1024);
