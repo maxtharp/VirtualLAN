@@ -42,6 +42,18 @@ public class Parser {
         return -1;
     }
 
+    public static String getIP(String deviceName) {
+        Map<String, Device> deviceMap = parseConfigFile();
+
+        Device targetDevice = deviceMap.get(deviceName);
+        if (targetDevice != null) {
+            return targetDevice.getIP();
+        }
+
+        // Return null if device not found (indicating error)
+        return null;
+    }
+
 
     // Helper method to parse the config file
     private static Map<String, Device> parseConfigFile() {

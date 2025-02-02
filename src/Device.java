@@ -38,6 +38,11 @@ public class Device {
         return port;
     }
 
+    public String getIP() {
+        return ipAddress;
+    }
+
+
     @Override
     public String toString() {
         return "Device{name='" + name + "', port=" + port + ", ipAddress='" + ipAddress + "'}";
