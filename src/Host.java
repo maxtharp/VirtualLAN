@@ -11,24 +11,26 @@ public class Host {
         Scanner keyboard = new Scanner(System.in);
         DatagramSocket socket = new DatagramSocket(); // sending socket
 
-        System.out.println("Enter the source MAC: ");
-        String inputMAC = keyboard.nextLine();
+        // allows for the source MAC to be initialized
+        final String sourceMAC = args[0];
 
-        // making sure the input doesn't have a comma
-        while (inputMAC.contains(",")) {
-            System.out.println("You can't have a ',' in your source MAC\nEnter the source MAC: ");
-            inputMAC = keyboard.nextLine();
-        }
-
-        // allows for the source MAC to be initialized and not changed per instance
-        final String sourceMAC = inputMAC;
+        System.out.println(sourceMAC);
 
         final int devicePort = Parser.getPort(sourceMAC);
+
+        List<String> stringDestinationIPs = Parser.getNeighborsIP(sourceMAC);
+        List<Integer> destinationPorts = Parser.getNeighborsPort(sourceMAC);
+
+        // get the 1st IP (should only be one for project 1)
+        InetAddress destinationIP = InetAddress.getByName(stringDestinationIPs.get(0));
+
+        // get the 1st port (should only be one for project 1)
+        int destinationPort = destinationPorts.get(0);
 
         // sender thread
         Thread senderThread = new Thread(() -> {
             try {
-                sendMessages(keyboard, socket, sourceMAC);
+                sendMessages(keyboard, socket, sourceMAC, destinationIP, destinationPort);
             } catch (Exception e) {
                 System.err.println("Error in sender thread: " + e.getMessage());
             }
@@ -47,7 +49,7 @@ public class Host {
         receiverThread.start();
     }
 
-    private static void sendMessages(Scanner keyboard, DatagramSocket socket, String sourceMAC) throws Exception {
+    private static void sendMessages(Scanner keyboard, DatagramSocket socket, String sourceMAC, InetAddress destinationIP, int destinationPort) throws Exception {
         while (true) {
 
             System.out.println("Enter the text to send: ");
@@ -67,16 +69,6 @@ public class Host {
                 System.out.println("You can't have a ',' in your destination MAC\nEnter the destination MAC: ");
                 destinationMAC = keyboard.nextLine();
             }
-
-            // get IPs and ports from parser
-            List<String> stringDestinationIPs = Parser.getNeighborsIP(destinationMAC);
-            List<Integer> destinationPorts = Parser.getNeighborsPort(destinationMAC);
-
-            // get the 1st IP (should only be one for project 1)
-            InetAddress destinationIP = InetAddress.getByName(stringDestinationIPs.get(0));
-
-            // get the 1st port (should only be one for project 1)
-            int destinationPort = destinationPorts.get(0);
 
             // create message
             String message = sourceMAC + "," + destinationMAC + "," + text;
