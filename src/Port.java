@@ -20,7 +20,8 @@ public class Port {
         DatagramPacket request = new DatagramPacket(
                 packet.getMessage().getBytes(),
                 packet.getMessage().getBytes().length,
-                InetAddress.getByName(Parser.getIP(packet.getDestMac())),
+                //InetAddress.getByName(Parser.getIP(packet.getDestMac())),
+                InetAddress.getByName("localhost"),
                 portID
         );
         socket.send(request);
