@@ -74,9 +74,9 @@ public class Switch {
                     messageData[1],
                     messageData[2]);
 
-            System.out.println("Received packet on port " + receivedFrame.getPort()
+            System.out.println("Received packet on port " + devicePort
                     + " with destination MAC " + packet.getDestMac());
-            aSwitch.handleIncomingPacket(packet, receivedFrame.getPort());
+            aSwitch.handleIncomingPacket(packet, devicePort);
         }
     }
 }
