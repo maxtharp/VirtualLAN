@@ -9,7 +9,6 @@ public class Host {
     public static void main(String[] args) throws Exception {
 
         Scanner keyboard = new Scanner(System.in);
-        DatagramSocket socket = new DatagramSocket(); // sending socket
 
         // allows for the source MAC to be initialized
         final String sourceMAC = args[0];
@@ -18,11 +17,14 @@ public class Host {
 
         final int devicePort = Parser.getPort(sourceMAC);
 
+        DatagramSocket socket = new DatagramSocket(devicePort); // sending socket
+
         List<String> stringDestinationIPs = Parser.getNeighborsIP(sourceMAC);
         List<Integer> destinationPorts = Parser.getNeighborsPort(sourceMAC);
 
         // get the 1st IP (should only be one for project 1)
-        InetAddress destinationIP = InetAddress.getByName(stringDestinationIPs.get(0));
+        //InetAddress destinationIP = InetAddress.getByName(stringDestinationIPs.get(0));
+        InetAddress destinationIP = InetAddress.getByName("localhost");
 
         // get the 1st port (should only be one for project 1)
         int destinationPort = destinationPorts.get(0);
@@ -39,7 +41,7 @@ public class Host {
         // receiver thread
         Thread receiverThread = new Thread(() -> {
             try {
-                receiveMessages(sourceMAC, devicePort);
+                receiveMessages(sourceMAC, socket);
             } catch (Exception e) {
                 System.err.println("Error in receiver thread: " + e.getMessage());
             }
@@ -86,16 +88,18 @@ public class Host {
         }
     }
 
-    private static void receiveMessages(String MAC, int port) throws Exception {
-        DatagramSocket receivingSocket = new DatagramSocket(port);
+    private static void receiveMessages(String MAC, DatagramSocket socket) throws Exception {
+        System.out.println("waiting");
 
         while (true) {
             DatagramPacket receivedFrame = new DatagramPacket(new byte[1024], 1024);
-            receivingSocket.receive(receivedFrame);
+            socket.receive(receivedFrame);
 
             byte[] receivedMessage = Arrays.copyOf(receivedFrame.getData(), receivedFrame.getLength());
             String[] messageData = new String(receivedMessage).split(",");
 
+            System.out.println(receivedFrame.getLength());
+            System.out.println(new String(receivedMessage));
             if (messageData.length == 3 && MAC.equals(messageData[1])) {
                 String acknowledgment = "Message received.\nMAC Address of sender: " + messageData[0] + ".\nMessage Content: " + messageData[2];
                 System.out.println(acknowledgment);
