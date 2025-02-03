@@ -23,7 +23,6 @@ public class Port {
                 InetAddress.getByName("localhost"),
                 portID
         );
-        System.out.println(portID);
         receivingSocket.send(request);
     }
 }

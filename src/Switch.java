@@ -23,15 +23,16 @@ public class Switch {
     public void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException {
         // Check if the MAC address is already in the table
         String destMac = packet.getDestMac();
+        macTable.put(packet.getSrcMac(), ports.get(portID));
+
+        System.out.println(macTable);
+
         if (macTable.containsKey(destMac)) {
             Port foundPort = macTable.get(destMac);
             foundPort.forwardPacket(packet, receivingSocket);
         } else {
             flood(portID, packet, receivingSocket);
         }
-
-        // Update the MAC address table with the port where the packet came from
-        macTable.put(packet.getSrcMac(), ports.get(portID));
     }
 
     // Flood the packet to all other ports except the source port
@@ -50,10 +51,7 @@ public class Switch {
         Switch aSwitch = new Switch();
         String deviceMAC = args[0];
         final int devicePort = Parser.getPort(deviceMAC);
-        final String deviceIP = Parser.getIP(deviceMAC);
 
-
-        aSwitch.addPort(devicePort, deviceIP);
         for (int i = 0; i < Parser.getNeighborsPort(deviceMAC).size(); i++){
             aSwitch.addPort(Parser.getNeighborsPort(deviceMAC).get(i),
                     Parser.getNeighborsIP(deviceMAC).get(i));
@@ -69,14 +67,10 @@ public class Switch {
                     receivedFrame.getLength());
 
             String[] messageData = new String(message).split(",");
-            Packet packet = new Packet(
-                    messageData[0],
-                    messageData[1],
-                    messageData[2]);
+            Packet packet = new Packet(messageData[0],messageData[1],messageData[2]);
 
-            System.out.println("Received packet on port " + devicePort
-                    + " with destination MAC " + packet.getDestMac());
-            aSwitch.handleIncomingPacket(packet, devicePort, receivingSocket);
+            System.out.println("Received packet with destination MAC " + packet.getDestMac());
+            aSwitch.handleIncomingPacket(packet, receivedFrame.getPort(), receivingSocket);
         }
     }
 }
