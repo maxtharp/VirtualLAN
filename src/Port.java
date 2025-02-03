@@ -14,7 +14,7 @@ public class Port {
 
     // Send the packet from this port
     public void forwardPacket(Packet packet) throws IOException {
-        System.out.println("Sending packet to port " + portName + " with destination MAC " + packet.getDestMac());
+        System.out.println("Sending packet to port " + portID + ":" + portName + " with destination MAC " + packet.getDestMac());
 
         DatagramSocket socket = new DatagramSocket();
         DatagramPacket request = new DatagramPacket(
