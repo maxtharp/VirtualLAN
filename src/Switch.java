@@ -67,13 +67,15 @@ public class Switch {
             byte[] message = Arrays.copyOf(
                     receivedFrame.getData(),
                     receivedFrame.getLength());
+
             String[] messageData = new String(message).split(",");
             Packet packet = new Packet(
                     messageData[0],
                     messageData[1],
                     messageData[2]);
 
-            System.out.println("Received packet on port " + devicePort + " with destination MAC " + packet.getDestMac());
+            System.out.println("Received packet on port " + receivedFrame.getPort()
+                    + " with destination MAC " + packet.getDestMac());
             aSwitch.handleIncomingPacket(packet, receivedFrame.getPort());
         }
     }
