@@ -23,8 +23,7 @@ public class Host {
         List<Integer> destinationPorts = Parser.getNeighborsPort(sourceMAC);
 
         // get the 1st IP (should only be one for project 1)
-        //InetAddress destinationIP = InetAddress.getByName(stringDestinationIPs.get(0));
-        InetAddress destinationIP = InetAddress.getByName("localhost");
+        InetAddress destinationIP = InetAddress.getByName(stringDestinationIPs.get(0));
 
         // get the 1st port (should only be one for project 1)
         int destinationPort = destinationPorts.get(0);

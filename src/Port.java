@@ -19,8 +19,7 @@ public class Port {
         DatagramPacket request = new DatagramPacket(
                 packet.getMessage().getBytes(),
                 packet.getMessage().getBytes().length,
-                //InetAddress.getByName(Parser.getIP(packet.getDestMac())),
-                InetAddress.getByName("localhost"),
+                InetAddress.getByName(Parser.getIP(packet.getDestMac())),
                 portID
         );
         System.out.println(portID);
