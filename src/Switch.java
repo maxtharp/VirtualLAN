@@ -20,7 +20,7 @@ public class Switch {
     }
 
     // Handle incoming packet on a given port
-    public void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException {
+    public void handleIncomingPacket(Packet packet, int portID) throws IOException {
         // Check if the MAC address is already in the table
         String destMac = packet.getDestMac();
         macTable.put(packet.getSrcMac(), ports.get(portID));
@@ -69,7 +69,7 @@ public class Switch {
             String[] messageData = new String(message).split(",");
             Packet packet = new Packet(messageData[0],messageData[1],messageData[2]);
             System.out.println("Received packet with destination MAC " + packet.getDestMac());
-            aSwitch.handleIncomingPacket(packet, receivedFrame.getPort(), receivingSocket);
+            aSwitch.handleIncomingPacket(packet, devicePort);
         }
     }
 }
