@@ -27,20 +27,20 @@ public class Switch {
 
         if (macTable.containsKey(destMac)) {
             Port foundPort = macTable.get(destMac);
-            foundPort.forwardPacket(packet, receivingSocket);
+            foundPort.forwardPacket(packet);
         } else {
-            flood(portID, packet, receivingSocket);
+            flood(portID, packet);
         }
     }
 
     // Flood the packet to all other ports except the source port
-    private void flood(int sourcePortId, Packet packet, DatagramSocket receivingSocket) throws IOException {
+    private void flood(int sourcePortId, Packet packet) throws IOException {
         System.out.println("Flooding packet to all ports except " + sourcePortId);
 
         // Send packet to all other ports
         for (Map.Entry<Integer, Port> entry : ports.entrySet()) {
             if (entry.getKey() != sourcePortId) {
-                entry.getValue().forwardPacket(packet, receivingSocket);
+                entry.getValue().forwardPacket(packet);
             }
         }
     }
@@ -59,6 +59,7 @@ public class Switch {
         DatagramSocket receivingSocket = new DatagramSocket(devicePort);
         DatagramPacket receivedFrame = new DatagramPacket(new byte[1024], 1024);
 
+        //noinspection InfiniteLoopStatement
         while (true) {
             receivingSocket.receive(receivedFrame);
             byte[] message = Arrays.copyOf(
@@ -67,7 +68,6 @@ public class Switch {
 
             String[] messageData = new String(message).split(",");
             Packet packet = new Packet(messageData[0],messageData[1],messageData[2]);
-
             System.out.println("Received packet with destination MAC " + packet.getDestMac());
             aSwitch.handleIncomingPacket(packet, receivedFrame.getPort(), receivingSocket);
         }
