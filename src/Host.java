@@ -89,7 +89,6 @@ public class Host {
 
     private static void receiveMessages(String MAC, DatagramSocket socket) throws Exception {
 
-        //noinspection InfiniteLoopStatement
         while (true) {
             DatagramPacket receivedFrame = new DatagramPacket(new byte[1024], 1024);
             socket.receive(receivedFrame);
@@ -97,7 +96,7 @@ public class Host {
             byte[] receivedMessage = Arrays.copyOf(receivedFrame.getData(), receivedFrame.getLength());
             String[] messageData = new String(receivedMessage).split(",");
 
-            if (messageData.length == 3) {
+            if (messageData.length == 3 && MAC.equals(messageData[1])) {
                 String acknowledgment = "Message received.\nMAC Address of sender: " + messageData[0] + ".\nMessage Content: " + messageData[2];
                 System.out.println(acknowledgment);
             }
