@@ -88,7 +88,6 @@ public class Host {
     }
 
     private static void receiveMessages(String MAC, DatagramSocket socket) throws Exception {
-        System.out.println("waiting");
 
         while (true) {
             DatagramPacket receivedFrame = new DatagramPacket(new byte[1024], 1024);
@@ -97,7 +96,6 @@ public class Host {
             byte[] receivedMessage = Arrays.copyOf(receivedFrame.getData(), receivedFrame.getLength());
             String[] messageData = new String(receivedMessage).split(",");
 
-            System.out.println(receivedFrame.getLength());
             System.out.println(new String(receivedMessage));
             if (messageData.length == 3 && MAC.equals(messageData[1])) {
                 String acknowledgment = "Message received.\nMAC Address of sender: " + messageData[0] + ".\nMessage Content: " + messageData[2];

@@ -22,7 +22,6 @@ public class Port {
                 InetAddress.getByName(Parser.getIP(packet.getDestMac())),
                 portID
         );
-        System.out.println(portID);
         receivingSocket.send(request);
     }
 }
