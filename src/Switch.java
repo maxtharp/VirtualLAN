@@ -15,8 +15,8 @@ public class Switch {
         ports = new HashMap<>();
     }
 
-    public void addPort(int portID, String portName) {
-        ports.put(portID, new Port(portID, portName));
+    public void addPort(int portID, String portIP) {
+        ports.put(portID, new Port(portID, portIP));
     }
 
     // Handle incoming packet on a given port
@@ -24,8 +24,6 @@ public class Switch {
         // Check if the MAC address is already in the table
         String destMac = packet.getDestMac();
         macTable.put(packet.getSrcMac(), ports.get(portID));
-
-        System.out.println(macTable);
 
         if (macTable.containsKey(destMac)) {
             Port foundPort = macTable.get(destMac);
@@ -50,6 +48,7 @@ public class Switch {
     public static void main(String[] args) throws IOException {
         Switch aSwitch = new Switch();
         String deviceMAC = args[0];
+        System.out.println(deviceMAC);
         final int devicePort = Parser.getPort(deviceMAC);
 
         for (int i = 0; i < Parser.getNeighborsPort(deviceMAC).size(); i++){

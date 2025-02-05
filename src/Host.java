@@ -96,7 +96,6 @@ public class Host {
             byte[] receivedMessage = Arrays.copyOf(receivedFrame.getData(), receivedFrame.getLength());
             String[] messageData = new String(receivedMessage).split(",");
 
-            System.out.println(new String(receivedMessage));
             if (messageData.length == 3 && MAC.equals(messageData[1])) {
                 String acknowledgment = "Message received.\nMAC Address of sender: " + messageData[0] + ".\nMessage Content: " + messageData[2];
                 System.out.println(acknowledgment);
