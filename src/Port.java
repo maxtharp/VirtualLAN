@@ -22,7 +22,7 @@ public class Port {
         DatagramPacket request = new DatagramPacket(
                 frame.getBytes(),
                 frame.length(),
-                InetAddress.getByName(Parser.getIP(packet.getDestMac())),
+                InetAddress.getByName(portName),
                 portID
         );
         receivingSocket.send(request);
