@@ -20,7 +20,7 @@ public class Switch {
     }
 
     // Handle incoming packet on a given port
-    public void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException {
+    public void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException, InterruptedException {
         Port sourcePort = ports.get(portID);
         if (sourcePort == null) {
             System.err.println("Unknown source port: " + portID);
@@ -39,18 +39,19 @@ public class Switch {
     }
 
     // Flood the packet to all other ports except the source port
-    private void flood(int sourcePortId, Packet packet, DatagramSocket receivingSocket) throws IOException {
+    private void flood(int sourcePortId, Packet packet, DatagramSocket receivingSocket) throws IOException, InterruptedException {
         System.out.println("Flooding packet to all ports except " + sourcePortId);
 
         // Send packet to all other ports
         for (Map.Entry<Integer, Port> entry : ports.entrySet()) {
             if (entry.getKey() != sourcePortId) {
+                Thread.sleep(1000);
                 entry.getValue().forwardPacket(packet, receivingSocket);
             }
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Switch aSwitch = new Switch();
         String deviceMAC = args[0];
         System.out.println(deviceMAC);
