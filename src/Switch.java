@@ -21,13 +21,18 @@ public class Switch {
 
     // Handle incoming packet on a given port
     public void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException {
-        // Check if the MAC address is already in the table
-        String destMac = packet.getDestMac();
-        macTable.put(packet.getSrcMac(), ports.get(portID));
+        Port sourcePort = ports.get(portID);
+        if (sourcePort == null) {
+            System.err.println("Unknown source port: " + portID);
+            return;
+        }
 
-        if (macTable.containsKey(destMac)) {
-            Port foundPort = macTable.get(destMac);
-            foundPort.forwardPacket(packet, receivingSocket);
+        String destMac = packet.getDestMac();
+        macTable.put(packet.getSrcMac(), sourcePort);  // Update MAC table
+
+        Port destinationPort = macTable.get(destMac);
+        if (destinationPort != null) {
+            destinationPort.forwardPacket(packet, receivingSocket);
         } else {
             flood(portID, packet, receivingSocket);
         }
