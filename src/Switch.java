@@ -45,7 +45,6 @@ public class Switch {
         // Send packet to all other ports
         for (Map.Entry<Integer, Port> entry : ports.entrySet()) {
             if (entry.getKey() != sourcePortId) {
-                Thread.sleep(1000);
                 entry.getValue().forwardPacket(packet, receivingSocket);
             }
         }
