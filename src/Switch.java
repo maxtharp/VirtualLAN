@@ -27,11 +27,18 @@ public class Switch {
             return;
         }
 
+        String srcMac = packet.getSrcMac();
         String destMac = packet.getDestMac();
-        macTable.put(packet.getSrcMac(), sourcePort);  // Update MAC table
 
-        Port destinationPort = macTable.get(destMac);
-        if (destinationPort != null) {
+        // Only learn the source MAC if it's not already in the table
+        if (!macTable.containsKey(srcMac)) {
+            macTable.put(srcMac, sourcePort);
+            System.out.println("Updated MAC Table: " + srcMac + " -> Port " + portID);
+        }
+
+        // Forward if destination MAC is known, else flood
+        if (macTable.containsKey(destMac)) {
+            Port destinationPort = macTable.get(destMac);
             destinationPort.forwardPacket(packet, receivingSocket);
         } else {
             flood(portID, packet, receivingSocket);
@@ -39,17 +46,16 @@ public class Switch {
     }
 
     // Flood the packet to all other ports except the source port
-    private void flood(int sourcePortId, Packet packet, DatagramSocket receivingSocket) throws IOException, InterruptedException {
+    private void flood(int sourcePortId, Packet packet, DatagramSocket receivingSocket) throws IOException {
         System.out.println("Flooding packet to all ports except " + sourcePortId);
 
-        // Send packet to all other ports
         for (Map.Entry<Integer, Port> entry : ports.entrySet()) {
-            if (entry.getKey() != sourcePortId) {
-                Thread.sleep(1000);
+            if (entry.getKey() != sourcePortId) {  // Prevent sending back to source
                 entry.getValue().forwardPacket(packet, receivingSocket);
             }
         }
     }
+
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Switch aSwitch = new Switch();
