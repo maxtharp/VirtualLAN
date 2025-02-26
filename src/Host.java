@@ -98,9 +98,13 @@ public class Host {
             String[] splitVirtualDestinationIP = virtualDestinationIP.split(".");
             String destinationSubnet = splitVirtualDestinationIP[0];
 
-            // change the destination MAC to its router based on it subnet
+            // debugging
+            System.out.println(sourceSubnet);
+            System.out.println(destinationSubnet);
+
+            // changes the destination MAC to the router's MAC in the same subnet if the message is being sent to another subnet
             if (!(sourceSubnet.equals(destinationSubnet))){
-                //destinationMAC = R1
+                destinationMAC = "R1";
             }
 
             // create message
