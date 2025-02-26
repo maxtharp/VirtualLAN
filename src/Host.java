@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.io.*;
 
 public class Host {
     public static void main(String[] args) throws Exception {
@@ -71,8 +72,39 @@ public class Host {
                 destinationMAC = keyboard.nextLine();
             }
 
+            System.out.println("Enter the virtual source IP: ");
+            String virtualSourceIP = keyboard.nextLine();
+
+            // making sure the input doesn't have a comma
+            while (virtualSourceIP.contains(",")) {
+                System.out.println("You can't have a ',' in your text\nEnter the text to send: ");
+                virtualSourceIP = keyboard.nextLine();
+            }
+
+            System.out.println("Enter the virtual destination IP: ");
+            String virtualDestinationIP = keyboard.nextLine();
+
+            // making sure the input doesn't have a comma
+            while (virtualDestinationIP.contains(",")) {
+                System.out.println("You can't have a ',' in your text\nEnter the text to send: ");
+                virtualDestinationIP = keyboard.nextLine();
+            }
+
+            // gets the subnet of the source host
+            String[] splitVirtualSourceIP = virtualSourceIP.split(".");
+            String sourceSubnet = splitVirtualSourceIP[0];
+
+            //gets the subnet of the destination host
+            String[] splitVirtualDestinationIP = virtualDestinationIP.split(".");
+            String destinationSubnet = splitVirtualDestinationIP[0];
+
+            // change the destination MAC to its router based on it subnet
+            if (!(sourceSubnet.equals(destinationSubnet))){
+                //destinationMAC = R1
+            }
+
             // create message
-            String message = sourceMAC + "," + destinationMAC + "," + text;
+            String message = sourceMAC + "," + destinationMAC + "," + text + "," + virtualSourceIP + "," + virtualDestinationIP;
 
             // send message
             DatagramPacket request = new DatagramPacket(
@@ -96,7 +128,7 @@ public class Host {
             byte[] receivedMessage = Arrays.copyOf(receivedFrame.getData(), receivedFrame.getLength());
             String[] messageData = new String(receivedMessage).split(",");
 
-            if (messageData.length == 3) {
+            if (messageData.length == 5 && messageData[1].equals(MAC)) {
                 String acknowledgment = "Message received.\nMAC Address of sender: " + messageData[0] + ".\nMessage Content: " + messageData[2];
                 System.out.println(acknowledgment);
             }
