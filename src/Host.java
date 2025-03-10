@@ -16,6 +16,10 @@ public class Host {
 
         System.out.println(sourceMAC);
 
+        virtualSourceIP = Parser.getVirtualIP(sourceMAC);
+
+        System.out.println(virtualSourceIP);
+
         final int devicePort = Parser.getPort(sourceMAC);
 
         DatagramSocket socket = new DatagramSocket(devicePort); // sending socket
@@ -32,7 +36,7 @@ public class Host {
         // sender thread
         Thread senderThread = new Thread(() -> {
             try {
-                sendMessages(keyboard, socket, sourceMAC, destinationIP, destinationPort);
+                sendMessages(keyboard, socket, sourceMAC, destinationIP, destinationPort, virtualSourceIP);
             } catch (Exception e) {
                 System.err.println("Error in sender thread: " + e.getMessage());
             }
@@ -51,7 +55,7 @@ public class Host {
         receiverThread.start();
     }
 
-    private static void sendMessages(Scanner keyboard, DatagramSocket socket, String sourceMAC, InetAddress destinationIP, int destinationPort) throws Exception {
+    private static void sendMessages(Scanner keyboard, DatagramSocket socket, String sourceMAC, InetAddress destinationIP, int destinationPort, String virtualSourceIP) throws Exception {
         while (true) {
 
             System.out.println("Enter the text to send: ");
@@ -70,15 +74,6 @@ public class Host {
             while (destinationMAC.contains(",")) {
                 System.out.println("You can't have a ',' in your destination MAC\nEnter the destination MAC: ");
                 destinationMAC = keyboard.nextLine();
-            }
-
-            System.out.println("Enter the virtual source IP: ");
-            String virtualSourceIP = keyboard.nextLine();
-
-            // making sure the input doesn't have a comma
-            while (virtualSourceIP.contains(",")) {
-                System.out.println("You can't have a ',' in your text\nEnter the text to send: ");
-                virtualSourceIP = keyboard.nextLine();
             }
 
             System.out.println("Enter the virtual destination IP: ");
@@ -103,23 +98,11 @@ public class Host {
             System.out.println(destinationSubnet);
 
             // changes the destination MAC to the router's MAC in the source's subnet if the message is being sent to another subnet
+            // read default gateway from parser
             if (!(sourceSubnet.equals(destinationSubnet))){
-                switch (sourceSubnet){
-                    case "net1":
-                        destinationMAC = "R1";
-                        break;
-                    case "net2":
-                        if (destinationSubnet.equals("net1")){
-                            destinationMAC = "R1";
-                        }
-                        else if (destinationSubnet.equals("net3")){
-                            destinationMAC = "R2";
-                        }
-                        break;
-                    case "net3":
-                        destinationMAC = "R2";
-                        break;
-                }
+                gatewayRouterIP = Parser.getGateIP(sourceMAC);
+                String[] splitGatewayRouterIP = gatewayRouterIP.split(".");
+                destinationMAC = splitGatewayRouterIP[1];
             }
 
             // create message
