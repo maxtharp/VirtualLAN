@@ -71,7 +71,7 @@ public class Switch {
                     receivedFrame.getLength());
 
             String[] messageData = new String(message).split(",");
-            Packet packet = new Packet(messageData[0],messageData[1],messageData[2]);
+            Packet packet = new Packet(messageData[0],messageData[1],messageData[2], messageData[3], messageData[4]);
 
             System.out.println("Received packet with destination MAC " + packet.getDestMac());
             aSwitch.handleIncomingPacket(packet, receivedFrame.getPort(), receivingSocket);

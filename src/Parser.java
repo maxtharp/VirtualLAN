@@ -42,16 +42,20 @@ public class Parser {
         return -1;
     }
 
-    public static String getIP(String deviceName) {
-        Map<String, Device> deviceMap = parseConfigFile();
+    public static String getGateIP(String deviceName) {
 
-        Device targetDevice = deviceMap.get(deviceName);
-        if (targetDevice != null) {
-            return targetDevice.getIP();
-        }
+    }
 
-        // Return null if device not found (indicating error)
-        return null;
+    public static String getVirtualIP(String deviceName) {
+
+    }
+
+    public static List<String> getSubnets(String deviceName) {
+
+    }
+
+    public static List<String> getNextHop(String deviceName) {
+
     }
 
 

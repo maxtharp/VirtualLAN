@@ -12,6 +12,14 @@ public class Port {
         this.portName = portName;
     }
 
+    public String getPortName(){
+        return portName;
+    }
+
+    public int getPortID() {
+        return portID;
+    }
+
     // Send the packet from this port
     public void forwardPacket(Packet packet, DatagramSocket receivingSocket) throws IOException {
         System.out.println("Sending packet to port " + portID + ":" + portName + " with destination MAC " + packet.getDestMac());

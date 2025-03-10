@@ -43,8 +43,9 @@ routers
 R1
 10000
 10.222.10.27
-net1.R1
-net2.R1
+net1:net1.R1
+net2:net2.R1
+net3:net2.R1
 R2
 11000
 10.222.10.27
