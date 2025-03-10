@@ -3,14 +3,18 @@ import java.util.List;
 
 public class Device {
     private String name;
+    private String virtualIP;
+    private String realIP;
     private int port;
-    private String ipAddress;
+    private String gatewayIP;
     private List<Device> neighbors;
 
-    public Device(String name, int port, String ipAddress) {
+    public Device(String name, String virtualIP, String realIP, int port, String gatewayIP) {
         this.name = name;
+        this.virtualIP = virtualIP;
+        this.realIP = realIP;
         this.port = port;
-        this.ipAddress = ipAddress;
+        this.gatewayIP = gatewayIP;
         this.neighbors = new ArrayList<>();
     }
 
@@ -21,7 +25,7 @@ public class Device {
     public List<String> getNeighborsIP() {
         List<String> neighborIPs = new ArrayList<>();
         for (Device neighbor : neighbors) {
-            neighborIPs.add(neighbor.ipAddress);
+            neighborIPs.add(neighbor.realIP);
         }
         return neighborIPs;
     }
@@ -34,17 +38,25 @@ public class Device {
         return neighborPorts;
     }
 
+    public String getVirtualIP() {
+        return virtualIP;
+    }
+
+    public String getGatewayIP() {
+        return gatewayIP;
+    }
+
     public int getPort() {
         return port;
     }
 
     public String getIP() {
-        return ipAddress;
+        return realIP;
     }
-
 
     @Override
     public String toString() {
-        return "Device{name='" + name + "', port=" + port + ", ipAddress='" + ipAddress + "'}";
+        return "Device{name='" + name + "', virtualIP='" + virtualIP + "', realIP='" + realIP + "', port=" + port + ", gatewayIP='" + gatewayIP + "'}";
     }
 }
+
