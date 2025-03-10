@@ -94,7 +94,7 @@ public class Host {
             String[] splitVirtualSourceIP = virtualSourceIP.split(".");
             String sourceSubnet = splitVirtualSourceIP[0];
 
-            //gets the subnet of the destination host
+            // gets the subnet of the destination host
             String[] splitVirtualDestinationIP = virtualDestinationIP.split(".");
             String destinationSubnet = splitVirtualDestinationIP[0];
 
@@ -102,9 +102,24 @@ public class Host {
             System.out.println(sourceSubnet);
             System.out.println(destinationSubnet);
 
-            // changes the destination MAC to the router's MAC in the same subnet if the message is being sent to another subnet
+            // changes the destination MAC to the router's MAC in the source's subnet if the message is being sent to another subnet
             if (!(sourceSubnet.equals(destinationSubnet))){
-                destinationMAC = "R1";
+                switch (sourceSubnet){
+                    case "net1":
+                        destinationMAC = "R1";
+                        break;
+                    case "net2":
+                        if (destinationSubnet.equals("net1")){
+                            destinationMAC = "R1";
+                        }
+                        else if (destinationSubnet.equals("net3")){
+                            destinationMAC = "R2";
+                        }
+                        break;
+                    case "net3":
+                        destinationMAC = "R2";
+                        break;
+                }
             }
 
             // create message
