@@ -99,7 +99,7 @@ public class Host {
             // changes the destination MAC to the router's MAC in the source's subnet if the message is being sent to another subnet
             // read default gateway from parser
             if (!(sourceSubnet.equals(destinationSubnet))){
-                String gatewayRouterIP = Parser.getGatewayIP(sourceMAC);
+                String gatewayRouterIP = Parser.getGateIP(sourceMAC);
                 String[] splitGatewayRouterIP = gatewayRouterIP.split(".");
                 destinationMAC = splitGatewayRouterIP[1];
             }
