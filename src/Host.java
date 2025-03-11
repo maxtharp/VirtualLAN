@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.io.*;
 
 public class Host {
     public static void main(String[] args) throws Exception {
@@ -16,7 +15,7 @@ public class Host {
 
         System.out.println(sourceMAC);
 
-        virtualSourceIP = Parser.getVirtualIP(sourceMAC);
+        final String virtualSourceIP = Parser.getVirtualIP(sourceMAC);
 
         System.out.println(virtualSourceIP);
 
@@ -100,7 +99,7 @@ public class Host {
             // changes the destination MAC to the router's MAC in the source's subnet if the message is being sent to another subnet
             // read default gateway from parser
             if (!(sourceSubnet.equals(destinationSubnet))){
-                gatewayRouterIP = Parser.getGateIP(sourceMAC);
+                String gatewayRouterIP = Parser.getGateIP(sourceMAC);
                 String[] splitGatewayRouterIP = gatewayRouterIP.split(".");
                 destinationMAC = splitGatewayRouterIP[1];
             }
