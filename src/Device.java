@@ -1,13 +1,33 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Device {
     private String name;
     private int port;
     private String ipAddress;
+    private String gatewayIP;
+    private String virtualIP;
     private List<Device> neighbors;
+    private Map<String, String> routerTable;
 
-    public Device(String name, int port, String ipAddress) {
+    Device(String name, int port, String ipAddress, String gatewayIP, String virtualIP) {
+        this.name = name;
+        this.port = port;
+        this.ipAddress = ipAddress;
+        this.gatewayIP = gatewayIP;
+        this.virtualIP = virtualIP;
+        this.neighbors = new ArrayList<>();
+    }
+
+    Device (String name, int port, String ipAddress, Map<String,String> routerTable) {
+        this.name = name;
+        this.port = port;
+        this.ipAddress = ipAddress;
+        this.routerTable = routerTable;
+        this.neighbors = new ArrayList<>();
+    }
+    Device (String name, int port, String ipAddress) {
         this.name = name;
         this.port = port;
         this.ipAddress = ipAddress;
@@ -16,6 +36,10 @@ public class Device {
 
     public void addNeighbor(Device neighbor) {
         neighbors.add(neighbor);
+    }
+
+    public Map<String, String> getRouterTable() {
+        return routerTable;
     }
 
     public List<String> getNeighborsIP() {
@@ -38,10 +62,13 @@ public class Device {
         return port;
     }
 
-    public String getIP() {
-        return ipAddress;
+    public String getGatewayIP() {
+        return gatewayIP;
     }
 
+    public String getVirtualIP() {
+        return virtualIP;
+    }
 
     @Override
     public String toString() {
