@@ -85,11 +85,11 @@ public class Host {
             }
 
             // gets the subnet of the source host
-            String[] splitVirtualSourceIP = virtualSourceIP.split(".");
+            String[] splitVirtualSourceIP = virtualSourceIP.split("\\.");
             String sourceSubnet = splitVirtualSourceIP[0];
 
             // gets the subnet of the destination host
-            String[] splitVirtualDestinationIP = virtualDestinationIP.split(".");
+            String[] splitVirtualDestinationIP = virtualDestinationIP.split("\\.");
             String destinationSubnet = splitVirtualDestinationIP[0];
 
             // debugging
@@ -100,7 +100,7 @@ public class Host {
             // read default gateway from parser
             if (!(sourceSubnet.equals(destinationSubnet))){
                 String gatewayRouterIP = Parser.getGateIP(sourceMAC);
-                String[] splitGatewayRouterIP = gatewayRouterIP.split(".");
+                String[] splitGatewayRouterIP = gatewayRouterIP.split("\\.");
                 destinationMAC = splitGatewayRouterIP[1];
             }
 
