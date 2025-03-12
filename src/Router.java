@@ -28,7 +28,7 @@ public class Router {
 
         // Find destination port based on IP routing table
         String destinationSubnet = getSubnetFromIp(destIP);
-        Port destinationPort = ports.get(Parser.getPort(getMacFromIp(ipRoutingTable.get(destinationSubnet))));
+        Port destinationPort = ports.get(Parser.getPort(ipRoutingTable.get(destinationSubnet)));
 
         if (destinationPort != null ) {
             // Forward packet based on destination subnet
@@ -54,7 +54,6 @@ public class Router {
 
         System.out.println(deviceMAC);
 
-
         for (int i = 0; i < Parser.getNeighborsPort(deviceMAC).size(); i++) {
             router.addPort(Parser.getNeighborsPort(deviceMAC).get(i),
                     Parser.getNeighborsIP(deviceMAC).get(i));
@@ -70,7 +69,7 @@ public class Router {
                     receivedFrame.getLength());
 
             String[] messageData = new String(message).split(",");
-            Packet packet = new Packet(messageData[0], messageData[1], messageData[2], messageData[3], messageData[4]);
+            Packet packet = new Packet(deviceMAC, router.getMacFromIp(messageData[4]), messageData[2], messageData[3], messageData[4]);
 
             System.out.println("Received packet with destination IP " + packet.getDestIP());
             router.handleIncomingPacket(packet, receivedFrame.getPort(), receivingSocket);
