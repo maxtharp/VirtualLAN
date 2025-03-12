@@ -25,17 +25,24 @@ public class Router {
         }
 
         String destIP = packet.getDestIP();
+        String sourceIP = packet.getSrcIP();
 
-        // Find destination port based on IP routing table
+        // Find destination port based on IP routing table (change if net1 ignore)
         String destinationSubnet = getSubnetFromIp(destIP);
-        Port destinationPort = ports.get(Parser.getPort(ipRoutingTable.get(destinationSubnet)));
+        String sourceSubnet = getSubnetFromIp(sourceIP);
 
-        if (destinationPort != null ) {
-            // Forward packet based on destination subnet
-            destinationPort.forwardPacket(packet, receivingSocket);
+        if (!(destinationSubnet.equals(sourceSubnet))){
+            Port destinationPort = ports.get(Parser.getPort(ipRoutingTable.get(destinationSubnet)));
+
+            if (destinationPort != null ) {
+                // Forward packet based on destination subnet
+                destinationPort.forwardPacket(packet, receivingSocket);
+            } else {
+                // If the destination subnet is not found, drop the packet or perform another action
+                System.out.println("Destination subnet not found. Dropping packet.");
+            }
         } else {
-            // If the destination subnet is not found, drop the packet or perform another action
-            System.out.println("Destination subnet not found. Dropping packet.");
+            System.out.println("Packet ignored");
         }
     }
     private String getSubnetFromIp(String ipAddress) {

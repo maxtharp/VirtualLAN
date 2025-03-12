@@ -130,7 +130,7 @@ public class Host {
             String[] messageData = new String(receivedMessage).split(",");
 
             if (messageData[1].equals(MAC)) {
-                String acknowledgment = "Message received.\nMAC Address of sender: " + messageData[0] + ".\nMessage Content: " + messageData[2];
+                String acknowledgment = "Message received.\nMAC Address of sender: " + messageData[0] + ".\nIP Address of the sender: " + messageData[3] + ".\nMessage Content: " + messageData[2];
                 System.out.println(acknowledgment);
             }
         }
