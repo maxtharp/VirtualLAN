@@ -4,20 +4,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Port {
-    private int portID;
-    private String portName;
+    private final int portID;
+    private final String portName;
 
     public Port(int portId, String portName) {
         this.portID = portId;
         this.portName = portName;
-    }
-
-    public String getPortName(){
-        return portName;
-    }
-
-    public int getPortID() {
-        return portID;
     }
 
     // Send the packet from this port

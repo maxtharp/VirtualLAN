@@ -2,13 +2,9 @@ import java.io.*;
 import java.util.*;
 
 public class Parser {
-    private static Map<String, Device> deviceMap;
-    private Map<String, List<String>> links = new HashMap<>();
     private static final String configFilePath = "src/config.txt"; // Path to your config.txt file
 
-
-    // Get neighbors' IP addresses
-    public static List<String> getNeighborsIP(String inputName) throws IOException {
+    public static List<String> getNeighborsIP(String inputName) {
         Map<String, Device> deviceMap = parseConfigFile();
 
         Device targetDevice = deviceMap.get(inputName);
@@ -19,8 +15,7 @@ public class Parser {
         return Collections.emptyList();
     }
 
-    // Get neighbors' ports
-    public static List<Integer> getNeighborsPort(String inputName) throws IOException {
+    public static List<Integer> getNeighborsPort(String inputName) {
         Map<String, Device> deviceMap = parseConfigFile();
 
         Device targetDevice = deviceMap.get(inputName);
@@ -31,20 +26,17 @@ public class Parser {
         return Collections.emptyList();
     }
 
-    // Get the port of a specific device
-    public static int getPort(String inputName) throws IOException {
+    public static int getPort(String inputName) {
         Map<String, Device> deviceMap = parseConfigFile();
 
         Device targetDevice = deviceMap.get(inputName);
         if (targetDevice != null) {
             return targetDevice.getPort();
         }
-
-        // Return -1 if device not found (indicating error)
         return -1;
     }
 
-    public static String getGateIP(String deviceName) throws IOException {
+    public static String getGateIP(String deviceName) {
         Map<String, Device> deviceMap = parseConfigFile();
         Device device = deviceMap.get(deviceName);
         if (device != null) {
@@ -53,11 +45,29 @@ public class Parser {
         return null;
     }
 
-    public static String getVirtualIP(String deviceName) throws IOException {
+    public static String getVirtualIP(String deviceName) {
         Map<String, Device> deviceMap = parseConfigFile();
         Device device = deviceMap.get(deviceName);
         if (device != null) {
             return device.getVirtualIP();
+        }
+        return null;
+    }
+
+    public static Map<String, String> getRouterTable(String deviceName) {
+        Map<String, Device> deviceMap = parseConfigFile();
+        Device device = deviceMap.get(deviceName);
+        if (device != null) {
+            return device.getRouterTable();
+        }
+        return null;
+    }
+
+    public static String getIpAddress(String deviceName) {
+        Map<String, Device> deviceMap = parseConfigFile();
+        Device device = deviceMap.get(deviceName);
+        if (device != null) {
+            return device.getIpAddress();
         }
         return null;
     }
@@ -137,5 +147,6 @@ public class Parser {
     public static void main(String[] args) throws IOException {
         Parser.parseConfigFile();
         System.out.println(Parser.getVirtualIP("A"));
+        System.out.println(getNeighborsPort("A"));
     }
 }

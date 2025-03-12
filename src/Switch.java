@@ -7,8 +7,8 @@ import java.util.Map;
 
 
 public class Switch {
-    private Map<String, Port> macTable;  // Map of MAC address to corresponding port
-    private Map<Integer, Port> ports;  // Map of port IDs to Port objects
+    private final Map<String, Port> macTable;  // Map of MAC address to corresponding port
+    private final Map<Integer, Port> ports;  // Map of port IDs to Port objects
 
     public Switch() {
         macTable = new HashMap<>();
@@ -20,7 +20,7 @@ public class Switch {
     }
 
     // Handle incoming packet on a given port
-    public void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException, InterruptedException {
+    public void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException {
         Port sourcePort = ports.get(portID);
         if (sourcePort == null) {
             System.err.println("Unknown source port: " + portID);
@@ -39,7 +39,7 @@ public class Switch {
     }
 
     // Flood the packet to all other ports except the source port
-    private void flood(int sourcePortId, Packet packet, DatagramSocket receivingSocket) throws IOException, InterruptedException {
+    private void flood(int sourcePortId, Packet packet, DatagramSocket receivingSocket) throws IOException {
         System.out.println("Flooding packet to all ports except " + sourcePortId);
 
         // Send packet to all other ports
@@ -50,10 +50,11 @@ public class Switch {
         }
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         Switch aSwitch = new Switch();
         String deviceMAC = args[0];
         System.out.println(deviceMAC);
+        System.out.println(Parser.getPort(deviceMAC));
         final int devicePort = Parser.getPort(deviceMAC);
 
         for (int i = 0; i < Parser.getNeighborsPort(deviceMAC).size(); i++){

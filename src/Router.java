@@ -3,20 +3,16 @@ import java.io.*;
 import java.util.*;
 
 public class Router {
-    private Map<String, Port> ipRoutingTable;  // Map of destination subnet to corresponding port
-    private Map<Integer, Port> ports;  // Map of port IDs to Port objects
+    public static Map<String, String> ipRoutingTable;  // Map of destination subnet to corresponding port
+    private static Map<Integer, Port> ports;  // Map of port IDs to Port objects
 
-    public Router() {
-        ipRoutingTable = new HashMap<>();
+    public Router(String deviceMAC) {
+        ipRoutingTable = Parser.getRouterTable(deviceMAC);
         ports = new HashMap<>();
     }
 
     public void addPort(int portID, String portIP) {
         ports.put(portID, new Port(portID, portIP));
-    }
-
-    public void buildRouterTable(String subnet, Port port) {
-        ipRoutingTable.put(subnet, port);
     }
 
     // Handle incoming packet on a given port
@@ -32,7 +28,7 @@ public class Router {
 
         // Find destination port based on IP routing table
         String destinationSubnet = getSubnetFromIp(destIP);
-        Port destinationPort = ipRoutingTable.get(destinationSubnet);
+        Port destinationPort = ports.get(Parser.getPort(getMacFromIp(ipRoutingTable.get(destinationSubnet))));
 
         if (destinationPort != null ) {
             // Forward packet based on destination subnet
@@ -42,16 +38,18 @@ public class Router {
             System.out.println("Destination subnet not found. Dropping packet.");
         }
     }
-
-    // Get subnet from IP address (simplified for illustration)
     private String getSubnetFromIp(String ipAddress) {
         String[] splitVirtualSourceIP = ipAddress.split("\\.");
         return splitVirtualSourceIP[0];
     }
+    private String getMacFromIp(String ipAddress) {
+        String[] splitVirtualSourceIP = ipAddress.split("\\.");
+        return splitVirtualSourceIP[1];
+    }
 
     public static void main(String[] args) throws IOException {
-        Router router = new Router();
         String deviceMAC = args[0];
+        Router router = new Router(deviceMAC);
         int devicePort = Parser.getPort(deviceMAC);
 
         System.out.println(deviceMAC);
@@ -60,10 +58,6 @@ public class Router {
         for (int i = 0; i < Parser.getNeighborsPort(deviceMAC).size(); i++) {
             router.addPort(Parser.getNeighborsPort(deviceMAC).get(i),
                     Parser.getNeighborsIP(deviceMAC).get(i));
-        }
-
-        for (int i = 0; i < Parser.getSubnets(deviceMAC).size(); i++) {
-            //router.buildRouterTable(Parser.getSubnets(deviceMAC).get(i), Parser.getNextHop(deviceMAC).get(i));
         }
 
         DatagramSocket receivingSocket = new DatagramSocket(devicePort);

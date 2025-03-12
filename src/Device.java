@@ -58,6 +58,10 @@ public class Device {
         return neighborPorts;
     }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
     public int getPort() {
         return port;
     }
