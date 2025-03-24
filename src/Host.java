@@ -32,10 +32,13 @@ public class Host {
         // get the 1st port (should only be one for project 1)
         int destinationPort = destinationPorts.get(0);
 
+        // hosts with have a device type of H
+        String deviceType = "H";
+
         // sender thread
         Thread senderThread = new Thread(() -> {
             try {
-                sendMessages(keyboard, socket, sourceMAC, destinationIP, destinationPort, virtualSourceIP);
+                sendMessages(keyboard, socket, sourceMAC, destinationIP, destinationPort, virtualSourceIP, deviceType);
             } catch (Exception e) {
                 System.err.println("Error in sender thread: " + e.getMessage());
             }
@@ -54,7 +57,7 @@ public class Host {
         receiverThread.start();
     }
 
-    private static void sendMessages(Scanner keyboard, DatagramSocket socket, String sourceMAC, InetAddress destinationIP, int destinationPort, String virtualSourceIP) throws Exception {
+    private static void sendMessages(Scanner keyboard, DatagramSocket socket, String sourceMAC, InetAddress destinationIP, int destinationPort, String virtualSourceIP, String deviceType) throws Exception {
         while (true) {
 
             System.out.println("Enter the text to send: ");
@@ -99,9 +102,6 @@ public class Host {
                 String[] splitGatewayRouterIP = gatewayRouterIP.split("\\.");
                 destinationMAC = splitGatewayRouterIP[1];
             }
-
-            // hosts with have a device type of H
-            String deviceType = "H";
 
             // create message
             String message = sourceMAC + "," + destinationMAC + "," + text + "," + virtualSourceIP + "," + virtualDestinationIP + "," + deviceType;
