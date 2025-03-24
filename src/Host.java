@@ -32,7 +32,7 @@ public class Host {
         // get the 1st port (should only be one for project 1)
         int destinationPort = destinationPorts.get(0);
 
-        // hosts with have a device type of H
+        // hosts will have a device type of H
         String deviceType = "H";
 
         // sender thread
