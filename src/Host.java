@@ -92,10 +92,6 @@ public class Host {
             String[] splitVirtualDestinationIP = virtualDestinationIP.split("\\.");
             String destinationSubnet = splitVirtualDestinationIP[0];
 
-            // debugging
-            System.out.println(sourceSubnet);
-            System.out.println(destinationSubnet);
-
             // changes the destination MAC to the router's MAC in the source's subnet if the message is being sent to another subnet
             // read default gateway from parser
             if (!(sourceSubnet.equals(destinationSubnet))){
@@ -104,8 +100,11 @@ public class Host {
                 destinationMAC = splitGatewayRouterIP[1];
             }
 
+            // hosts with have a device type of H
+            String deviceType = "H";
+
             // create message
-            String message = sourceMAC + "," + destinationMAC + "," + text + "," + virtualSourceIP + "," + virtualDestinationIP;
+            String message = sourceMAC + "," + destinationMAC + "," + text + "," + virtualSourceIP + "," + virtualDestinationIP + "," + deviceType;
 
             // send message
             DatagramPacket request = new DatagramPacket(
