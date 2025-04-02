@@ -63,27 +63,27 @@ public class Host {
             System.out.println("Enter the text to send: ");
             String text = keyboard.nextLine();
 
-            // making sure the input doesn't have a comma
-            while (text.contains(",")) {
-                System.out.println("You can't have a ',' in your text\nEnter the text to send: ");
+            // making sure the input doesn't have a backtick
+            while (text.contains("`")) {
+                System.out.println("You can't have a '`' in your text\nEnter the text to send: ");
                 text = keyboard.nextLine();
             }
 
             System.out.println("Enter the destination MAC: ");
             String destinationMAC = keyboard.nextLine();
 
-            // making sure the input doesn't have a comma
-            while (destinationMAC.contains(",")) {
-                System.out.println("You can't have a ',' in your destination MAC\nEnter the destination MAC: ");
+            // making sure the input doesn't have a backtick
+            while (destinationMAC.contains("`")) {
+                System.out.println("You can't have a '`' in your destination MAC\nEnter the destination MAC: ");
                 destinationMAC = keyboard.nextLine();
             }
 
             System.out.println("Enter the virtual destination IP: ");
             String virtualDestinationIP = keyboard.nextLine();
 
-            // making sure the input doesn't have a comma
-            while (virtualDestinationIP.contains(",")) {
-                System.out.println("You can't have a ',' in your text\nEnter the text to send: ");
+            // making sure the input doesn't have a backtick
+            while (virtualDestinationIP.contains("`")) {
+                System.out.println("You can't have a '`' in your text\nEnter the text to send: ");
                 virtualDestinationIP = keyboard.nextLine();
             }
 
@@ -104,7 +104,7 @@ public class Host {
             }
 
             // create message
-            String message = sourceMAC + "," + destinationMAC + "," + text + "," + virtualSourceIP + "," + virtualDestinationIP + "," + deviceType;
+            String message = sourceMAC + "`" + destinationMAC + "`" + text + "`" + virtualSourceIP + "`" + virtualDestinationIP + "`" + deviceType;
 
             // send message
             DatagramPacket request = new DatagramPacket(
@@ -126,7 +126,7 @@ public class Host {
             socket.receive(receivedFrame);
 
             byte[] receivedMessage = Arrays.copyOf(receivedFrame.getData(), receivedFrame.getLength());
-            String[] messageData = new String(receivedMessage).split(",");
+            String[] messageData = new String(receivedMessage).split("`");
 
             if (messageData[1].equals(MAC)) {
                 String acknowledgment = "Message received.\nMAC Address of sender: " + messageData[0] + ".\nIP Address of the sender: " + messageData[3] + ".\nMessage Content: " + messageData[2];
