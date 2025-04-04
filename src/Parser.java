@@ -54,11 +54,11 @@ public class Parser {
         return null;
     }
 
-    public static Map<String, String> getRouterTable(String deviceName) {
+    public static List<String> getConnectedNets(String deviceName) {
         Map<String, Device> deviceMap = parseConfigFile();
         Device device = deviceMap.get(deviceName);
         if (device != null) {
-            return device.getRouterTable();
+            return device.getConnectedNets();
         }
         return null;
     }
@@ -109,19 +109,16 @@ public class Parser {
                     case "routers" -> {
                         int port = Integer.parseInt(br.readLine().trim());
                         String realIP = br.readLine().trim();
-                        Map<String, String> routerTable = new HashMap<>();
+                        List<String> connectedNets = new ArrayList<>();
 
                         // Read each entry until you encounter a null or empty line
                         String entry = br.readLine().trim();
-                        while (entry != null && entry.contains(":")) {
-                            String[] tableEntry = entry.split(":");
-                            if (tableEntry.length == 2) {
-                                routerTable.put(tableEntry[0], tableEntry[1]);
-                            }
+                        while (entry != null && entry.contains("net")) {
+                            connectedNets.add(entry);
                             entry = br.readLine();
                         }
 
-                        deviceMap.put(line, new Device(line, port, realIP, routerTable));
+                        deviceMap.put(line, new Device(line, port, realIP, connectedNets));
                     }
                     case "links" -> {
                         String[] link = line.split(":");
@@ -142,11 +139,5 @@ public class Parser {
             System.err.println("Error reading configuration file: " + e.getMessage());
         }
         return deviceMap;
-    }
-
-    public static void main(String[] args) throws IOException {
-        Parser.parseConfigFile();
-        System.out.println(Parser.getVirtualIP("A"));
-        System.out.println(getNeighborsPort("A"));
     }
 }
