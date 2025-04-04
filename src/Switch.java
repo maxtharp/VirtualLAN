@@ -27,8 +27,8 @@ public class Switch {
             return;
         }
 
-        String destMac = packet.getDestMac();
-        macTable.put(packet.getSrcMac(), sourcePort);  // Update MAC table
+        String destMac = packet.destMac();
+        macTable.put(packet.srcMac(), sourcePort);  // Update MAC table
 
         Port destinationPort = macTable.get(destMac);
         if (destinationPort != null) {
@@ -71,10 +71,10 @@ public class Switch {
                     receivedFrame.getData(),
                     receivedFrame.getLength());
 
-            String[] messageData = new String(message).split(",");
-            Packet packet = new Packet(messageData[0],messageData[1],messageData[2], messageData[3], messageData[4]);
+            String[] messageData = new String(message).split("`");
+            Packet packet = new Packet(messageData[0],messageData[1],messageData[2], messageData[3], messageData[4], messageData[5]);
 
-            System.out.println("Received packet with destination MAC " + packet.getDestMac());
+            System.out.println("Received packet with destination MAC " + packet.destMac());
             aSwitch.handleIncomingPacket(packet, receivedFrame.getPort(), receivingSocket);
         }
     }
