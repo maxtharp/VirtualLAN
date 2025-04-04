@@ -3,13 +3,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Device {
-    private String name;
-    private int port;
-    private String ipAddress;
+    private final String name;
+    private final int port;
+    private final String ipAddress;
     private String gatewayIP;
     private String virtualIP;
-    private List<Device> neighbors;
-    private Map<String, String> routerTable;
+    private final List<Device> neighbors;
+    private List<String> connectedNets;
 
     Device(String name, int port, String ipAddress, String gatewayIP, String virtualIP) {
         this.name = name;
@@ -20,11 +20,11 @@ public class Device {
         this.neighbors = new ArrayList<>();
     }
 
-    Device (String name, int port, String ipAddress, Map<String,String> routerTable) {
+    Device (String name, int port, String ipAddress, List<String> connectedNets) {
         this.name = name;
         this.port = port;
         this.ipAddress = ipAddress;
-        this.routerTable = routerTable;
+        this.connectedNets = connectedNets;
         this.neighbors = new ArrayList<>();
     }
     Device (String name, int port, String ipAddress) {
@@ -38,8 +38,8 @@ public class Device {
         neighbors.add(neighbor);
     }
 
-    public Map<String, String> getRouterTable() {
-        return routerTable;
+    public List<String> getConnectedNets() {
+        return connectedNets;
     }
 
     public List<String> getNeighborsIP() {
