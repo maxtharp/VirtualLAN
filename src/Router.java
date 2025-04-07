@@ -22,14 +22,17 @@ public class Router{
     }
 
     private void updateTable(Map<String, DistanceVector> receivedTable,
-                             String deviceMAC, Router router,
-                             DatagramSocket receivingSocket) throws IOException {
+                             String deviceMAC,
+                             Router router,
+                             DatagramSocket receivingSocket,
+                             String srcMAC)
+            throws IOException {
+
         List<String> connectedNets = Parser.getConnectedNets(deviceMAC);
         boolean tableUpdated = false;
 
         for (Map.Entry<String, DistanceVector> entry : receivedTable.entrySet()) {
-            int plusCost = entry.getValue().cost() + DEFAULT_COST;
-            DistanceVector dvReplacement = new DistanceVector(entry.getValue().nextHop(), plusCost);
+            DistanceVector dvReplacement = new DistanceVector(srcMAC, entry.getValue().cost() + DEFAULT_COST);
 
             assert connectedNets != null;
             for (String net : connectedNets) {
@@ -37,7 +40,7 @@ public class Router{
                  to DV_TABLE + check if there is a common key between tables
                 + check the cost to determine if it should be used to update DV_TABLE */
                 if (Objects.equals(entry.getKey(), net)
-                        && plusCost < DV_TABLE.get(net).cost()) {
+                        && entry.getValue().cost() + DEFAULT_COST < DV_TABLE.get(net).cost()) {
 
                     DV_TABLE.replace(net, dvReplacement);
                     tableUpdated = true;
@@ -49,11 +52,12 @@ public class Router{
             }
         }
         if (tableUpdated) {
-            router.sendDvTable(deviceMAC, DV_TABLE, receivingSocket);
+            router.floodDVTable(deviceMAC, DV_TABLE, receivingSocket);
+            System.out.println(DV_TABLE);
         }
     }
 
-    private void sendDvTable(String deviceMAC, Map<String, DistanceVector> dvTable, DatagramSocket socket) throws IOException {
+    private void floodDVTable(String deviceMAC, Map<String, DistanceVector> dvTable, DatagramSocket socket) throws IOException {
         for (Map.Entry<Integer, Port> entry : PORTS.entrySet()) {
             entry.getValue().forwardDvTable(deviceMAC, dvTable, socket, DEVICE_TYPE);
         }
@@ -64,7 +68,7 @@ public class Router{
     }
 
     // Handle incoming packet on a given port
-    private void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException {
+    private void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket, String deviceMAC) throws IOException {
         Port sourcePort = PORTS.get(portID);
 
         if (sourcePort == null) {
@@ -80,12 +84,20 @@ public class Router{
         String sourceSubnet = getSubnetFromIp(sourceIP);
 
         if (!(destinationSubnet.equals(sourceSubnet))){
-            Port destinationPort = PORTS.get(Parser.getPort(String.valueOf(DV_TABLE.get(destinationSubnet))));
+            if (DV_TABLE.get(destinationSubnet).nextHop().equals(deviceMAC)) {
+                PORTS.get(Parser.getExitPort(deviceMAC)).forwardPacket(packet, receivingSocket);
+            }
 
-            if (destinationPort != null ) {
-                destinationPort.forwardPacket(packet, receivingSocket);
-            } else {
-                System.out.println("Destination subnet not found. Dropping packet.");
+            else {
+                Port destinationPort = PORTS.get(Parser.getPort(DV_TABLE.get(destinationSubnet).nextHop()));
+                System.out.println(destIP);
+
+                if (destinationPort != null ) {
+                    destinationPort.forwardPacket(packet, receivingSocket);
+                    System.out.println("packet with destination: " + packet.destMac() + "has moved through this router");
+                } else {
+                    System.out.println("Destination subnet not found. Dropping packet.");
+                }
             }
         } else {
             System.out.println("Packet ignored");
@@ -116,14 +128,18 @@ public class Router{
         DatagramPacket receivedFrame = new DatagramPacket(new byte[1024], 1024);
 
         router.buildTable(deviceMAC);
-        router.sendDvTable(deviceMAC, router.DV_TABLE, receivingSocket);
+        router.floodDVTable(deviceMAC, router.DV_TABLE, receivingSocket);
 
         while (true) {
             receivingSocket.receive(receivedFrame);
             Packet packet = getPacket(receivedFrame, router, deviceMAC, receivingSocket);
 
-            System.out.println("Received packet with destination IP " + packet.destIP());
-            router.handleIncomingPacket(packet, receivedFrame.getPort(), receivingSocket);
+            if (!packet.destIP().isEmpty()) {
+                System.out.println("Received packet with destination IP " + packet.destIP());
+                router.handleIncomingPacket(packet, receivedFrame.getPort(), receivingSocket, deviceMAC);
+            } else {
+                System.out.println("Successfully handled DV table, waiting for another packet...");
+            }
         }
     }
 
@@ -136,28 +152,36 @@ public class Router{
                 receivedFrame.getLength());
 
         String[] messageData = new String(message).split("`");
+
         if (messageData[5].equals(router.DEVICE_TYPE)) {
             System.out.println("Received DV table from " + messageData[0]);
-            for(String device : router.HAVE_RECEIVED_FROM) {
-                if (!device.equals(messageData[0])) {
-                    router.PORTS.get(Parser.getPort(messageData[0])).forwardDvTable
-                            (deviceMAC,
-                            router.DV_TABLE,
-                            receivingSocket,
-                            router.DEVICE_TYPE);
 
+            if (router.HAVE_RECEIVED_FROM.isEmpty()) {
+                router.PORTS.get(Parser.getPort(messageData[0])).forwardDvTable
+                        (deviceMAC, router.DV_TABLE, receivingSocket, router.DEVICE_TYPE);
+                router.HAVE_RECEIVED_FROM.add(messageData[0]);
+            } else {
+                boolean sourceAlreadyReceived = router.HAVE_RECEIVED_FROM.contains(messageData[0]);
+
+                if (!sourceAlreadyReceived) {
+                    router.PORTS.get(Parser.getPort(messageData[0])).forwardDvTable
+                            (deviceMAC, router.DV_TABLE, receivingSocket, router.DEVICE_TYPE);
                     router.HAVE_RECEIVED_FROM.add(messageData[0]);
                 }
             }
-            Map<String, DistanceVector> receivedDvTable = router.DeserializeDvTable(messageData[3]);
-            router.updateTable(receivedDvTable, deviceMAC, router, receivingSocket);
+
+            Map<String, DistanceVector> receivedDvTable = router.DeserializeDvTable(messageData[2]);
+            router.updateTable(receivedDvTable, deviceMAC, router, receivingSocket, messageData[0]);
+
+            return new Packet(deviceMAC, "", "", "", "", router.DEVICE_TYPE); // placeholder Packet.
         }
+
         return new Packet(deviceMAC,
                 router.getMacFromIp(messageData[4]),
                 messageData[2],
                 messageData[3],
                 messageData[4],
-                router.DEVICE_TYPE);
+                messageData[5]);
     }
 
         private Map<String, DistanceVector> DeserializeDvTable(String input) {
