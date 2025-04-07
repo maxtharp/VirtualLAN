@@ -36,6 +36,17 @@ public class Parser {
         return -1;
     }
 
+    public static int getExitPort(String inputName) {
+        Map<String, Device> deviceMap = parseConfigFile();
+
+        Device targetDevice = deviceMap.get(inputName);
+        if (targetDevice != null) {
+            return targetDevice.getExitPort();
+        }
+        return -1;
+    }
+
+
     public static String getGateIP(String deviceName) {
         Map<String, Device> deviceMap = parseConfigFile();
         Device device = deviceMap.get(deviceName);
@@ -59,15 +70,6 @@ public class Parser {
         Device device = deviceMap.get(deviceName);
         if (device != null) {
             return device.getConnectedNets();
-        }
-        return null;
-    }
-
-    public static String getIpAddress(String deviceName) {
-        Map<String, Device> deviceMap = parseConfigFile();
-        Device device = deviceMap.get(deviceName);
-        if (device != null) {
-            return device.getIpAddress();
         }
         return null;
     }
@@ -109,6 +111,7 @@ public class Parser {
                     case "routers" -> {
                         int port = Integer.parseInt(br.readLine().trim());
                         String realIP = br.readLine().trim();
+                        int exitPort = Integer.parseInt(br.readLine().trim());
                         List<String> connectedNets = new ArrayList<>();
 
                         // Read each entry until you encounter a null or empty line
@@ -118,7 +121,7 @@ public class Parser {
                             entry = br.readLine();
                         }
 
-                        deviceMap.put(line, new Device(line, port, realIP, connectedNets));
+                        deviceMap.put(line, new Device(line, port, realIP, exitPort, connectedNets));
                     }
                     case "links" -> {
                         String[] link = line.split(":");
@@ -139,5 +142,9 @@ public class Parser {
             System.err.println("Error reading configuration file: " + e.getMessage());
         }
         return deviceMap;
+    }
+
+    public static void main(String[] args) {
+        parseConfigFile();
     }
 }

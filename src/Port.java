@@ -21,7 +21,7 @@ public class Port {
         System.out.println("Sending packet to port " + portID + ":" + portName + " with destination MAC " + packet.destMac());
 
         String frame = packet.srcMac() + "`" + packet.destMac() + "`" +
-                packet.message() + "`" + packet.srcIP() + "`" + packet.destIP() + packet.deviceType();
+                packet.message() + "`" + packet.srcIP() + "`" + packet.destIP() + "`" + packet.deviceType();
 
         DatagramPacket request = new DatagramPacket(
                 frame.getBytes(),

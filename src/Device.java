@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Device {
     private final String name;
@@ -10,6 +9,7 @@ public class Device {
     private String virtualIP;
     private final List<Device> neighbors;
     private List<String> connectedNets;
+    private int exitPort;
 
     Device(String name, int port, String ipAddress, String gatewayIP, String virtualIP) {
         this.name = name;
@@ -20,10 +20,11 @@ public class Device {
         this.neighbors = new ArrayList<>();
     }
 
-    Device (String name, int port, String ipAddress, List<String> connectedNets) {
+    Device (String name, int port, String ipAddress, int exitPort, List<String> connectedNets) {
         this.name = name;
         this.port = port;
         this.ipAddress = ipAddress;
+        this.exitPort = exitPort;
         this.connectedNets = connectedNets;
         this.neighbors = new ArrayList<>();
     }
@@ -58,8 +59,8 @@ public class Device {
         return neighborPorts;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public int getExitPort() {
+        return exitPort;
     }
 
     public int getPort() {
