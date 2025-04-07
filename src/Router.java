@@ -94,7 +94,8 @@ public class Router{
 
                 if (destinationPort != null ) {
                     destinationPort.forwardPacket(packet, receivingSocket);
-                    System.out.println("packet with destination: " + packet.destMac() + "has moved through this router");
+                    System.out.println("-----" + "\n" + "packet with destination: "
+                            + packet.destMac() + "has moved through this router" + "\n" + "-----");
                 } else {
                     System.out.println("Destination subnet not found. Dropping packet.");
                 }
