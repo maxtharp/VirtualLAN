@@ -90,7 +90,6 @@ public class Router{
 
             else {
                 Port destinationPort = PORTS.get(Parser.getPort(DV_TABLE.get(destinationSubnet).nextHop()));
-                System.out.println(destIP);
 
                 if (destinationPort != null ) {
                     destinationPort.forwardPacket(packet, receivingSocket);
