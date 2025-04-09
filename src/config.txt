@@ -1,35 +1,35 @@
 hosts
 A
 3000
-localhost
+10.222.10.27
 net1.R1
 net1.A
 B
 4000
-localhost
+10.222.7.170
 net2.R3
 net1.B
 C
 5000
-localhost
+10.222.96.139
 net3.R6
 net3.C
 
 switches
 S1
 6000
-localhost
+10.222.10.27
 S2
 7000
-localhost
+10.222.112.41
 S3
 8000
-localhost
+10.222.96.139
 
 routers
 R1
 9000
-localhost
+10.222.112.41
 6000
 net1
 net4
@@ -37,7 +37,7 @@ net5
 
 R2
 10000
-localhost
+10.222.7.170
 10000
 net4
 net6
@@ -45,7 +45,7 @@ net7
 
 R3
 11000
-localhost
+10.222.96.139
 7000
 net2
 net5
@@ -54,7 +54,7 @@ net8
 
 R4
 12000
-localhost
+10.222.7.170
 12000
 net7
 net9
@@ -62,14 +62,14 @@ net10
 
 R5
 13000
-localhost
+10.222.112.41
 13000
 net8
 net9
 
 R6
 14000
-localhost
+10.222.10.27
 8000
 net3
 net10
