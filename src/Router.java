@@ -8,6 +8,7 @@ public class Router{
     private final int DEFAULT_COST = 1;
     private final String DEVICE_TYPE = "R";
     private final List<String> HAVE_RECEIVED_FROM;
+    private List<String> connectedNets;
 
     public Router() {
         DV_TABLE = new HashMap<>();
@@ -28,7 +29,7 @@ public class Router{
                              String srcMAC)
             throws IOException {
 
-        List<String> connectedNets = Parser.getConnectedNets(deviceMAC);
+        List<String> netsToAdd = new ArrayList<>();
         boolean tableUpdated = false;
 
         for (Map.Entry<String, DistanceVector> entry : receivedTable.entrySet()) {
@@ -45,19 +46,17 @@ public class Router{
                     DV_TABLE.replace(net, dvReplacement);
                     tableUpdated = true;
                 }
-                else if(Objects.equals(entry.getKey(), net) &&
-                        entry.getValue().cost() + DEFAULT_COST == DV_TABLE.get(net).cost()) {
-                    return;
-                }
                 else if (!DV_TABLE.containsKey(entry.getKey())) {
                     DV_TABLE.put(entry.getKey(), dvReplacement);
+                    netsToAdd.add(entry.getKey());
                     tableUpdated = true;
                 }
             }
         }
         if (tableUpdated) {
-            router.floodDVTable(deviceMAC, DV_TABLE, receivingSocket);
             System.out.println(DV_TABLE);
+            connectedNets.addAll(netsToAdd);
+            router.floodDVTable(deviceMAC, DV_TABLE, receivingSocket);
         }
     }
 
@@ -120,6 +119,7 @@ public class Router{
         String deviceMAC = args[0];
         Router router = new Router();
         int devicePort = Parser.getPort(deviceMAC);
+        router.connectedNets = Parser.getConnectedNets(deviceMAC);
 
         System.out.println(deviceMAC);
 
