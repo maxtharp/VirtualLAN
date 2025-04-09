@@ -45,6 +45,10 @@ public class Router{
                     DV_TABLE.replace(net, dvReplacement);
                     tableUpdated = true;
                 }
+                else if(Objects.equals(entry.getKey(), net) &&
+                        entry.getValue().cost() + DEFAULT_COST == DV_TABLE.get(net).cost()) {
+                    return;
+                }
                 else if (!DV_TABLE.containsKey(entry.getKey())) {
                     DV_TABLE.put(entry.getKey(), dvReplacement);
                     tableUpdated = true;
