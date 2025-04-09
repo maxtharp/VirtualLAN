@@ -7,30 +7,30 @@ import java.util.Map;
 
 
 public class Switch {
-    private final Map<String, Port> macTable;  // Map of MAC address to corresponding port
-    private final Map<Integer, Port> ports;  // Map of port IDs to Port objects
+    private final Map<String, Port> MAC_TABLE;  // Map of MAC address to corresponding port
+    private final Map<Integer, Port> PORTS;  // Map of port IDs to Port objects
 
     public Switch() {
-        macTable = new HashMap<>();
-        ports = new HashMap<>();
+        MAC_TABLE = new HashMap<>();
+        PORTS = new HashMap<>();
     }
 
     public void addPort(int portID, String portIP) {
-        ports.put(portID, new Port(portID, portIP));
+        PORTS.put(portID, new Port(portID, portIP));
     }
 
     // Handle incoming packet on a given port
     public void handleIncomingPacket(Packet packet, int portID, DatagramSocket receivingSocket) throws IOException {
-        Port sourcePort = ports.get(portID);
+        Port sourcePort = PORTS.get(portID);
         if (sourcePort == null) {
             System.err.println("Unknown source port: " + portID);
             return;
         }
 
         String destMac = packet.destMac();
-        macTable.put(packet.srcMac(), sourcePort);  // Update MAC table
+        MAC_TABLE.put(packet.srcMac(), sourcePort);  // Update MAC table
 
-        Port destinationPort = macTable.get(destMac);
+        Port destinationPort = MAC_TABLE.get(destMac);
         if (destinationPort != null) {
             destinationPort.forwardPacket(packet, receivingSocket);
         } else {
@@ -43,7 +43,7 @@ public class Switch {
         System.out.println("Flooding packet to all ports except " + sourcePortId);
 
         // Send packet to all other ports
-        for (Map.Entry<Integer, Port> entry : ports.entrySet()) {
+        for (Map.Entry<Integer, Port> entry : PORTS.entrySet()) {
             if (entry.getKey() != sourcePortId) {
                 entry.getValue().forwardPacket(packet, receivingSocket);
             }

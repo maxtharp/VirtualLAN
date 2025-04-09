@@ -34,6 +34,11 @@ public class Router{
 
         for (Map.Entry<String, DistanceVector> entry : receivedTable.entrySet()) {
             DistanceVector dvReplacement = new DistanceVector(srcMAC, entry.getValue().cost() + DEFAULT_COST);
+            if (!DV_TABLE.containsKey(entry.getKey())) {
+                 DV_TABLE.put(entry.getKey(), dvReplacement);
+                 netsToAdd.add(entry.getKey());
+                 tableUpdated = true;
+            }
 
             assert connectedNets != null;
             for (String net : connectedNets) {
@@ -46,15 +51,10 @@ public class Router{
                     DV_TABLE.replace(net, dvReplacement);
                     tableUpdated = true;
                 }
-                else if (!DV_TABLE.containsKey(entry.getKey())) {
-                    DV_TABLE.put(entry.getKey(), dvReplacement);
-                    netsToAdd.add(entry.getKey());
-                    tableUpdated = true;
-                }
             }
         }
         if (tableUpdated) {
-            System.out.println(DV_TABLE);
+            printDvTable();
             connectedNets.addAll(netsToAdd);
             router.floodDVTable(deviceMAC, DV_TABLE, receivingSocket);
         }
@@ -202,5 +202,11 @@ public class Router{
                 map.put(subnet, distanceVector);
             }
             return map;
+        }
+
+        private void printDvTable() {
+            for(Map.Entry<String, DistanceVector> entry : DV_TABLE.entrySet()) {
+                System.out.println(entry);
+            }
         }
     }

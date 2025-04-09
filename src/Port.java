@@ -8,17 +8,17 @@ import java.util.List;
 import java.util.Map;
 
 public class Port {
-    private final int portID;
-    private final String portName;
+    private final int PORT_ID;
+    private final String PORT_NAME;
 
     public Port(int portId, String portName) {
-        this.portID = portId;
-        this.portName = portName;
+        this.PORT_ID = portId;
+        this.PORT_NAME = portName;
     }
 
     // Send the packet from this port
     public void forwardPacket(Packet packet, DatagramSocket receivingSocket) throws IOException {
-        System.out.println("Sending packet to port " + portID + ":" + portName + " with destination MAC " + packet.destMac());
+        System.out.println("Sending packet to port " + PORT_ID + ":" + PORT_NAME + " with destination MAC " + packet.destMac());
 
         String frame = packet.srcMac() + "`" + packet.destMac() + "`" +
                 packet.message() + "`" + packet.srcIP() + "`" + packet.destIP() + "`" + packet.deviceType();
@@ -26,8 +26,8 @@ public class Port {
         DatagramPacket request = new DatagramPacket(
                 frame.getBytes(),
                 frame.length(),
-                InetAddress.getByName(portName),
-                portID
+                InetAddress.getByName(PORT_NAME),
+                PORT_ID
         );
         receivingSocket.send(request);
     }
@@ -35,7 +35,7 @@ public class Port {
     public void forwardDvTable(String deviceMAC, Map<String, DistanceVector> dvTable, DatagramSocket receivingSocket, String deviceType) throws IOException {
         List<String> keys = new ArrayList<>();
         List<String> values = new ArrayList<>();
-        System.out.println("Sending distance vector to port " + portID + ":" + portName);
+        System.out.println("Sending distance vector to port " + PORT_ID + ":" + PORT_NAME);
 
         for (Map.Entry<String, DistanceVector> entry : dvTable.entrySet()) {
             keys.add(entry.getKey());
@@ -47,8 +47,8 @@ public class Port {
         DatagramPacket request = new DatagramPacket(
                 frame.getBytes(),
                 frame.length(),
-                InetAddress.getByName(portName),
-                portID
+                InetAddress.getByName(PORT_NAME),
+                PORT_ID
         );
         receivingSocket.send(request);
     }
